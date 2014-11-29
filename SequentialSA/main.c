@@ -6,17 +6,46 @@
 //  Copyright (c) 2014 Vincent Ramdhanie. All rights reserved.
 //
 
+#include <time.h>
+#include <stdlib.h>
 #include <stdio.h>
 
-void start();
+int cost(); //cost function calculates the cost of a certain configuration
+
+int S;
+double T;
+int N;
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    printf("Hello, World!\n");
-    start();
+    
+    srand(time(NULL));
+    
+    S = (rand() % 200) + 200 ;
+    T = 10;
+    N = 100;
+    
+    int SP;
+    int deltaE;
+    do{
+        printf("Intermediate value: %d\n", S);
+        for(int i = 1; i <= N; i++){
+            SP = cost();
+            deltaE = SP - S;
+            if(deltaE < 0 || deltaE < T){
+                S = SP;
+            }
+        }
+        T *= 0.95;
+    }while(T > 0.1);
+    
+    printf("Final Value: %d\n", S);
+    
     return 0;
 }
 
-void start(){
-    printf("In the Function\n");
+int cost(){
+    int r = rand();
+    return r % 1000;
 }
+
+
