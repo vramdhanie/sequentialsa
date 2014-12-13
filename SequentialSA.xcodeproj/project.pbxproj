@@ -25,6 +25,7 @@
 /* Begin PBXFileReference section */
 		BF94DDC61A281CE900A60421 /* SequentialSA */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SequentialSA; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF94DDC91A281CE900A60421 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		BFAFC1091A3CAB8200CE103C /* plots */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = plots; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +59,7 @@
 			isa = PBXGroup;
 			children = (
 				BF94DDC91A281CE900A60421 /* main.c */,
+				BFAFC1091A3CAB8200CE103C /* plots */,
 			);
 			path = SequentialSA;
 			sourceTree = "<group>";
@@ -232,6 +234,7 @@
 				BF94DDCF1A281CE900A60421 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
