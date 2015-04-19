@@ -9,12 +9,14 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "generator.h"
 
 int cost(); //cost function calculates the cost of a certain configuration
 void nextConfiguration(); //find another configuration
+void loadData(); //load all data from the input file
 
 //define some data structures
-int plots[2][2] = {{1,2}, {3,4}};
+int plots[PLOT_N][PLOT_M];
 
 
 
@@ -25,10 +27,13 @@ int main(int argc, const char * argv[]) {
     
     srand(time(NULL));
     
-    nextConfiguration();//initialize the array randoly
+    generate(plots);
+    print(plots);
+    
+    nextConfiguration();//initialize the array randomly
     S = cost();
-    T = 1000;
-    N = 1000;
+    T = TEMPERATURE;
+    N = NUMBER_ITERATIONS;
     
     int SP;
     int deltaE;
@@ -51,8 +56,8 @@ int main(int argc, const char * argv[]) {
 }
 
 void nextConfiguration(){
-    for(int i = 0; i < 2; i++){
-        for(int j = 0; j < 2; j++){
+    for(int i = 0; i < PLOT_N; i++){
+        for(int j = 0; j < PLOT_M; j++){
             plots[i][j] = (rand() % 1000);
         }
     }
@@ -60,12 +65,16 @@ void nextConfiguration(){
 
 int cost(){
     int sum = 0;
-        for(int i = 0; i < 2; i++){
-            for(int j = 0; j < 2; j++){
+        for(int i = 0; i < PLOT_N; i++){
+            for(int j = 0; j < PLOT_M; j++){
                 sum += plots[i][j];
             }
         }
     return sum;
+}
+
+void loadData(){
+    
 }
 
 
