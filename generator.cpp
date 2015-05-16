@@ -18,16 +18,21 @@ void generate(int a[][PLOT_M]){
 }
 
 void print(int a[][PLOT_M]){
-    FILE *fp;
-    fp = fopen("plots", "w+");
-    fprintf(fp, "%d", 100);
+    
+    ofstream outStream;
+    outStream.open("plots");
+    if(outStream.fail()){
+        cout << "Failed to open output file\n";
+        exit(1);
+    }
 
     for(int i = 0; i < PLOT_N; i++){
         for(int j = 0; j < PLOT_M; j++){
-            fprintf(fp, "%d ", a[i][j]);
+            outStream << a[i][j] << " ";
         }
-        fprintf(fp,"\n");
+        outStream << std::endl;
     }
 
-    fclose(fp);
+
+    outStream.close();
 }

@@ -12,6 +12,11 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
+#include <fstream>
+
+using std::ofstream;
+using std::cout;
 
 #endif /* defined(__SequentialSA__generator__) */
 
