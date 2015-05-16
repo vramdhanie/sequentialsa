@@ -23,6 +23,5 @@
 /*
   Performs the generation on the data and stores it in a file
  */
-void generate(int a[][PLOT_M]);
-void print(int a[][PLOT_M]);
-
+void generate(int a[PLOT_N][PLOT_M]);
+void print(int a[PLOT_N][PLOT_M]);
