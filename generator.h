@@ -24,6 +24,7 @@ using std::cout;
 #define PLOT_M 5
 #define TEMPERATURE 1000 /*Initial temperature*/
 #define NUMBER_ITERATIONS 1000 /*Total number of iterations to execute*/
+#define K 5 /*Total number of Land Uses*/
 
 /*
   Performs the generation on the data and stores it in a file
