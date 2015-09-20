@@ -17,7 +17,7 @@
 
 using namespace std;
 
-int cost(); //cost function calculates the cost of a certain configuration
+long double cost(); //cost function calculates the cost of a certain configuration
 void nextConfiguration(); //find another configuration
 void loadData(); //load all data from the input file
 void printVector();
@@ -60,6 +60,9 @@ int main(int argc, const char * argv[]) {
     loadData();
     cout << "Plots: " << plots.size() << "\tLand Uses: " << landUses.size() << "\tAssigments: " << assignments.size() << endl;
     //printVector();
+    cout << "Cost of current config: " << cost() << "\n";
+    nextConfiguration();
+    cout << "Cost of next config: " << cost() << "\n";
     return 0;
 }
 
@@ -68,23 +71,34 @@ int main(int argc, const char * argv[]) {
    way.
 */
 void nextConfiguration(){
-    for(int i = 0; i < PLOT_N; i++){
-        for(int j = 0; j < PLOT_M; j++){
-            //plots[i][j] = (rand() % 1000);
-        }
-    }
+  int p = rand() % plots.size();
+  int us = assignments[p].second;
+
+  int q = rand() % plots.size();
+  int us2 = assignments[q].second;
+  while(us == us2 ){
+    q = rand() % plots.size();
+    us2 = assignments[q].second;
+  }
+
+  assignments[p].second = assignments[q].second;
+  assignments[q].second = us;
+
 }
 
 /*
    Calculate the cost of the current configuration
 */
-int cost(){
-    int sum = 0;
-        for(int i = 0; i < PLOT_N; i++){
-            for(int j = 0; j < PLOT_M; j++){
-                //sum += plots[i][j];
-            }
-        }
+long double cost(){
+    long double sum = 0;
+    for (vector< pair<int, int> >::iterator it = assignments.begin() ; it != assignments.end(); ++it){
+      vector< long double > plot = plots[it->first];
+      vector< long double > landUse = landUses[it->second];
+      for(int i = 0; i < plot.size(); i++){
+        sum += plot[i] * landUse[i];
+      }
+    }
+    cout << '\n';
     return sum;
 }
 
@@ -92,7 +106,7 @@ int cost(){
     Load the data from the text file.
 */
 void loadData(){
-    std::fstream myfile("../DataGenerator/data_2.txt", std::ios_base::in);
+    std::fstream myfile("../DataGenerator/data_1.txt", std::ios_base::in);
 
     int n, m, l, p, a;
 
