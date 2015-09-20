@@ -29,6 +29,11 @@ vector< vector<long double> > plots;
 vector< vector<long double> > landUses;
 vector< pair<int, int> > assignments;
 
+//Some constants
+const std::string BASE_FILE_PATH = "../DataGenerator/"; /*Where input files are located*/
+const std::string BASE_FILE_NAME = "data_"; /*Name of data files*/
+const std::string FILE_EXT = ".txt"; /*file extension to use*/
+
 int main(int argc, const char * argv[]) {
     srand(time(NULL));
     experiment();
