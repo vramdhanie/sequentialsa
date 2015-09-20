@@ -13,16 +13,19 @@
 #include "generator.h"
 #include "generator.cpp"
 #include <string>
+#include <vector>
 
-using std::string;
+using namespace std;
 
 int cost(); //cost function calculates the cost of a certain configuration
 void nextConfiguration(); //find another configuration
 void loadData(); //load all data from the input file
+void printVector();
 
 //define some data structures
-int plots[PLOT_N][PLOT_M];
 string landUses[] = {"FARM", "SCHOOL", "ROAD","RESERVE", "RESIDENTIAL"};
+
+vector< vector<long double> > plots;
 
 
 
@@ -55,7 +58,8 @@ int main(int argc, const char * argv[]) {
 
     printf("Final Value: %d\n", S);
 */
-  loadData();
+    loadData();
+    printVector();
     return 0;
 }
 
@@ -66,7 +70,7 @@ int main(int argc, const char * argv[]) {
 void nextConfiguration(){
     for(int i = 0; i < PLOT_N; i++){
         for(int j = 0; j < PLOT_M; j++){
-            plots[i][j] = (rand() % 1000);
+            //plots[i][j] = (rand() % 1000);
         }
     }
 }
@@ -78,7 +82,7 @@ int cost(){
     int sum = 0;
         for(int i = 0; i < PLOT_N; i++){
             for(int j = 0; j < PLOT_M; j++){
-                sum += plots[i][j];
+                //sum += plots[i][j];
             }
         }
     return sum;
@@ -88,27 +92,32 @@ int cost(){
     Load the data from the text file.
 */
 void loadData(){
-    std::fstream myfile("../DataGenerator/data_1.txt", std::ios_base::in);
+    std::fstream myfile("../DataGenerator/data_2.txt", std::ios_base::in);
 
     int n, m, l, p, a;
 
     //find total number of plots n and number of attributes m
     myfile >> n >> m;
 
-    printf("%d\t%d\n", n, m);
+    //printf("%d\t%d\n", n, m);
+
 
     float b;
      //find all attributes for all plots
     int num_plots = n * m;
     int count = 0;
-    while (myfile >> b)
-    {
+    for (int i = 0; i < n; i++){
+      vector<long double> row;
+      long double r;
+      for (int j = 0; j < m; j++){
+        myfile >> r;
+        row.push_back(r);
         count++;
-        printf("%f ", b);
-        if(count >= num_plots){
-          break;
-        }
+      }
+      plots.push_back(row);
     }
+
+    cout << "Total rows read: " << plots.size() << endl;
 
     printf("Number of values read: %d of %d\n", count, num_plots);
 
@@ -119,7 +128,7 @@ void loadData(){
     while (myfile >> b)
     {
         count++;
-        printf("%f ", b);
+        //printf("%f ", b);
         if(count >= num_plots){
           break;
         }
@@ -132,7 +141,16 @@ void loadData(){
       printf("plot %d assigned land use %d\n", p, a);
     }
 
-    getchar();
+}
+
+void printVector(){
+
+  for (vector<vector<long double> >::size_type i = 0; i < plots.size(); i++){
+    for (vector<long double>::size_type j = 0; j < plots[i].size(); j++){
+      cout << plots[i][j];
+    }
+    cout << endl;
+  }
 
 }
 
