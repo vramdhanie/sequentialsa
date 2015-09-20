@@ -10,17 +10,19 @@
 #include <iostream>
 #include <fstream>
 #include <iostream>
-#include "generator.h"
-#include "generator.cpp"
+#include "sa.h"
 #include <string>
 #include <vector>
 
 using namespace std;
 
-long double cost(); //cost function calculates the cost of a certain configuration
-void nextConfiguration(); //find another configuration
-void loadData(); //load all data from the input file
-void printVector();
+long double cost(vector< pair<int, int> >&); //cost function calculates the cost of a certain configuration
+pair<int, int> nextConfiguration(vector< pair<int, int> >&); //find another configuration
+void loadData(std::fstream&); //load all data from the input file
+void printVector(); //print the  content of the plots vector
+void revert(pair<int, int>, vector< pair<int, int> >&); //revert a configuration change
+void sa(int, int, vector< pair<int, int> >&); //perform the sequential SA algorithm
+void experiment(); //manage teh experiment
 
 //define some data structures
 vector< vector<long double> > plots;
@@ -28,93 +30,115 @@ vector< vector<long double> > landUses;
 vector< pair<int, int> > assignments;
 
 int main(int argc, const char * argv[]) {
-
-    int S;
-    double T;
-    int N;
-
     srand(time(NULL));
-
-    //nextConfiguration();//initialize the array randomly
-    //S = cost();
-    T = TEMPERATURE;
-    N = NUMBER_ITERATIONS;
-/*
-    int SP;
-    int deltaE;
-    do{
-        printf("Intermediate value: %d\n", S);
-        for(int i = 1; i <= N; i++){
-            nextConfiguration();
-            SP = cost();
-            deltaE = SP - S;
-            if(deltaE < 0 || deltaE < T){
-                S = SP;
-            }
-        }
-        T *= 0.99;
-    }while(T > 0.1);
-
-    printf("Final Value: %d\n", S);
-*/
-    loadData();
-    cout << "Plots: " << plots.size() << "\tLand Uses: " << landUses.size() << "\tAssigments: " << assignments.size() << endl;
-    //printVector();
-    cout << "Cost of current config: " << cost() << "\n";
-    nextConfiguration();
-    cout << "Cost of next config: " << cost() << "\n";
+    experiment();
     return 0;
+}
+
+/*
+   Manage the process of loading data, running the experiment
+   and saving the results.
+*/
+void experiment(){
+  int fileNum = 0;
+  std::fstream myfile("../DataGenerator/data_0.txt", std::ios_base::in);
+  loadData(myfile);
+  myfile.close();
+  cout << "Plots: " << plots.size() << "\tLand Uses: " << landUses.size() << "\tAssigments: " << assignments.size() << endl;
+  vector< pair<int, int> > a;
+  for(int i = 1; i <= ITERATIONS_PER_FILE; i++){
+    a = assignments;
+    sa(fileNum, i, a);
+  }
+}
+
+/*
+   Perform Sequential Simulated Annealing Algorithm
+*/
+void sa(int fileNum, int iterNum, vector< pair<int, int> > &a){
+  long double T;
+  int N;
+  T = TEMPERATURE;
+  N = NUMBER_ITERATIONS;
+  long double S;
+  long double SP;
+  long double deltaE;
+
+  S = cost(a);
+  pair<int, int> change;
+
+  ofstream out ("result_" + std::to_string(fileNum) + "_"+ std::to_string(iterNum) +".txt");
+
+  do{
+      out << T << ", " << S << "\n";
+      for(int i = 1; i <= N; i++){
+          change = nextConfiguration(a);
+          SP = cost(a);
+          deltaE = SP - S;
+          if(deltaE < 0 || deltaE < T){
+              S = SP;
+          }else{
+            revert(change, a);
+          }
+          out << T << ", " << S << "\n";
+      }
+      T *= TEMPERATURE_DECREMENT;
+  }while(T > TEMPERATURE_FINAL);
+  cout << "Final Value: " << S << "\n";
+  out.close();
 }
 
 /*
    Change the assignment of uses to plots in a random
    way.
 */
-void nextConfiguration(){
+pair<int, int> nextConfiguration(vector< pair<int, int> > &a){
   int p = rand() % plots.size();
-  int us = assignments[p].second;
+  int us = a[p].second;
 
   int q = rand() % plots.size();
-  int us2 = assignments[q].second;
+  int us2 = a[q].second;
   while(us == us2 ){
     q = rand() % plots.size();
-    us2 = assignments[q].second;
+    us2 = a[q].second;
   }
 
-  assignments[p].second = assignments[q].second;
-  assignments[q].second = us;
+  a[p].second = a[q].second;
+  a[q].second = us;
 
+  return make_pair(p, q);
+}
+
+void revert(pair<int, int> swap, vector< pair<int, int> > &a){
+  int temp = a[swap.first].second;
+  a[swap.first].second = a[swap.second].second;
+  a[swap.second].second = temp;
 }
 
 /*
    Calculate the cost of the current configuration
 */
-long double cost(){
+long double cost(vector< pair<int, int> > &a){
     long double sum = 0;
-    for (vector< pair<int, int> >::iterator it = assignments.begin() ; it != assignments.end(); ++it){
+    for (vector< pair<int, int> >::iterator it = a.begin() ; it != a.end(); ++it){
       vector< long double > plot = plots[it->first];
       vector< long double > landUse = landUses[it->second];
       for(int i = 0; i < plot.size(); i++){
         sum += plot[i] * landUse[i];
       }
     }
-    cout << '\n';
     return sum;
 }
 
 /*
     Load the data from the text file.
 */
-void loadData(){
-    std::fstream myfile("../DataGenerator/data_1.txt", std::ios_base::in);
+void loadData(std::fstream& dataFile){
 
     int n, m, l, p, a;
 
     //find total number of plots n and number of attributes m
-    myfile >> n >> m;
-
-    //printf("%d\t%d\n", n, m);
-
+    dataFile >> n >> m;
 
     float b;
      //find all attributes for all plots
@@ -124,36 +148,31 @@ void loadData(){
       vector<long double> row;
       long double r;
       for (int j = 0; j < m; j++){
-        myfile >> r;
+        dataFile >> r;
         row.push_back(r);
         count++;
       }
       plots.push_back(row);
     }
 
-    cout << "Total rows read: " << plots.size() << endl;
-
-    printf("Number of values read: %d of %d\n", count, num_plots);
-
     //find total number of land uses and criteria then load all values
-    myfile >> l >> m;
+    dataFile >> l >> m;
     int num_landUses = l * m;
     count = 0;
     for(int i = 0; i < l; i++){
       vector<long double> row;
       long double r;
       for (int j = 0; j < m; j++ ){
-        myfile >> r;
+        dataFile >> r;
         row.push_back(r);
         count++;
       }
       landUses.push_back(row);
     }
-    printf("Number of values read: %d of %d\n", count, num_landUses);
 
     //find all assignments
     for(int i = 0; i < n; i++){
-      myfile >> p >> a;
+      dataFile >> p >> a;
       assignments.push_back(make_pair(p, a));
     }
 
