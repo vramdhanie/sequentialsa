@@ -23,13 +23,12 @@ void loadData(); //load all data from the input file
 void printVector();
 
 //define some data structures
-string landUses[] = {"FARM", "SCHOOL", "ROAD","RESERVE", "RESIDENTIAL"};
-
 vector< vector<long double> > plots;
-
-
+vector< vector<long double> > landUses;
+vector< pair<int, int> > assignments;
 
 int main(int argc, const char * argv[]) {
+
     int S;
     double T;
     int N;
@@ -59,7 +58,8 @@ int main(int argc, const char * argv[]) {
     printf("Final Value: %d\n", S);
 */
     loadData();
-    printVector();
+    cout << "Plots: " << plots.size() << "\tLand Uses: " << landUses.size() << "\tAssigments: " << assignments.size() << endl;
+    //printVector();
     return 0;
 }
 
@@ -123,22 +123,24 @@ void loadData(){
 
     //find total number of land uses and criteria then load all values
     myfile >> l >> m;
-    num_plots = l * m;
+    int num_landUses = l * m;
     count = 0;
-    while (myfile >> b)
-    {
+    for(int i = 0; i < l; i++){
+      vector<long double> row;
+      long double r;
+      for (int j = 0; j < m; j++ ){
+        myfile >> r;
+        row.push_back(r);
         count++;
-        //printf("%f ", b);
-        if(count >= num_plots){
-          break;
-        }
+      }
+      landUses.push_back(row);
     }
-    printf("Number of values read: %d of %d\n", count, num_plots);
+    printf("Number of values read: %d of %d\n", count, num_landUses);
 
     //find all assignments
     for(int i = 0; i < n; i++){
       myfile >> p >> a;
-      printf("plot %d assigned land use %d\n", p, a);
+      assignments.push_back(make_pair(p, a));
     }
 
 }
@@ -147,7 +149,7 @@ void printVector(){
 
   for (vector<vector<long double> >::size_type i = 0; i < plots.size(); i++){
     for (vector<long double>::size_type j = 0; j < plots[i].size(); j++){
-      cout << plots[i][j];
+      cout << plots[i][j] << " ";
     }
     cout << endl;
   }
