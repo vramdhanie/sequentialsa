@@ -22,7 +22,7 @@ void loadData(std::fstream&); //load all data from the input file
 void printVector(); //print the  content of the plots vector
 void revert(pair<int, int>, vector< pair<int, int> >&); //revert a configuration change
 void sa(int, int, vector< pair<int, int> >&); //perform the sequential SA algorithm
-void experiment(); //manage teh experiment
+void experiment(); //manage the experiment
 
 //define some data structures
 vector< vector<long double> > plots;
@@ -40,16 +40,17 @@ int main(int argc, const char * argv[]) {
    and saving the results.
 */
 void experiment(){
-  int fileNum = 0;
-  std::fstream myfile("../DataGenerator/data_0.txt", std::ios_base::in);
-  loadData(myfile);
-  myfile.close();
-  cout << "Plots: " << plots.size() << "\tLand Uses: " << landUses.size() << "\tAssigments: " << assignments.size() << endl;
-  vector< pair<int, int> > a;
-  for(int i = 1; i <= ITERATIONS_PER_FILE; i++){
-    a = assignments;
-    sa(fileNum, i, a);
-  }
+  for(int k = 0; k < NUMBER_OF_INPUT_FILES; k++){
+    std::fstream myfile(BASE_FILE_PATH + BASE_FILE_NAME + std::to_string(k) + FILE_EXT, std::ios_base::in);
+    loadData(myfile);
+    myfile.close();
+    cout << "Plots: " << plots.size() << "\tLand Uses: " << landUses.size() << "\tAssigments: " << assignments.size() << endl;
+    vector< pair<int, int> > a;
+    for(int i = 1; i <= ITERATIONS_PER_FILE; i++){
+      a = assignments;
+      sa(k, i, a);
+    }
+}
 }
 
 /*
@@ -67,7 +68,7 @@ void sa(int fileNum, int iterNum, vector< pair<int, int> > &a){
   S = cost(a);
   pair<int, int> change;
 
-  ofstream out ("result_" + std::to_string(fileNum) + "_"+ std::to_string(iterNum) +".txt");
+  ofstream out ("result_" + std::to_string(fileNum) + "_"+ std::to_string(iterNum) + FILE_EXT);
 
   do{
       out << T << ", " << S << "\n";
