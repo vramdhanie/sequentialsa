@@ -1,4 +1,5 @@
 *.out
+*.txt
 plots
 .DS_Store
 **/.DS_Store
