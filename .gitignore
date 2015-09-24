@@ -4,3 +4,5 @@ plots
 .DS_Store
 **/.DS_Store
 gcloud/
+.ipynb_checkpoints/
+*.html
