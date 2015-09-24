@@ -13,6 +13,7 @@
 #include "sa.h"
 #include <string>
 #include <vector>
+#include <math.h>
 
 using namespace std;
 
@@ -39,6 +40,7 @@ int main(int argc, const char * argv[]) {
     experiment();
     return 0;
 }
+
 
 /*
    Manage the process of loading data, running the experiment
@@ -81,10 +83,14 @@ void sa(int fileNum, int iterNum, vector< pair<int, int> > &a){
           change = nextConfiguration(a);
           SP = cost(a);
           deltaE = SP - S;
-          if(deltaE < 0 || deltaE < T){
+          if(deltaE <= 0){
               S = SP;
           }else{
-            revert(change, a);
+            if(deltaE < T * (exp(-((deltaE)/T)))){
+              S = SP;
+            }else{
+              revert(change, a);
+            }
           }
           out << T << ", " << S << "\n";
       }
@@ -115,6 +121,9 @@ pair<int, int> nextConfiguration(vector< pair<int, int> > &a){
   return make_pair(p, q);
 }
 
+/*
+  Swap back values if the configuration is rejected.
+*/
 void revert(pair<int, int> swap, vector< pair<int, int> > &a){
   int temp = a[swap.first].second;
   a[swap.first].second = a[swap.second].second;
@@ -146,6 +155,9 @@ void loadData(std::fstream& dataFile){
     //find total number of plots n and number of attributes m
     dataFile >> n >> m;
 
+    //make sure that the plots vector is empty
+    plots.clear();
+
     float b;
      //find all attributes for all plots
     int num_plots = n * m;
@@ -165,6 +177,10 @@ void loadData(std::fstream& dataFile){
     dataFile >> l >> m;
     int num_landUses = l * m;
     count = 0;
+
+    //make sure the landUses vector is clear
+    landUses.clear();
+
     for(int i = 0; i < l; i++){
       vector<long double> row;
       long double r;
@@ -175,6 +191,9 @@ void loadData(std::fstream& dataFile){
       }
       landUses.push_back(row);
     }
+
+    //make sure the assignments vector is clear
+    assignments.clear();
 
     //find all assignments
     for(int i = 0; i < n; i++){
@@ -194,47 +213,3 @@ void printVector(){
   }
 
 }
-
-
-
-/**
-#include <sstream>
-#include <string>
-
-for(std::string line; std::getline(source, line); )   //read stream line by line
-{
-    std::istringstream in(line);      //make a stream for the line itself
-
-    std::string type;
-    in >> type;                  //and read the first whitespace-separated token
-
-    if(type == "triangle")       //and check its value
-    {
-        float x, y, z;
-        in >> x >> y >> z;       //now read the whitespace-separated floats
-    }
-    else if(...)
-        ...
-    else
-        ...
-}
-
-
-AND A SECOND OPTION:
-#include <string>
-#include <deque>
-#include <vector>
-#include "strtk.hpp"
-int main()
-{
-   std::string int_string = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15";
-   std::vector<int> int_list;
-   strtk::parse(int_string,",",int_list);
-
-   std::string double_string = "123.456|789.012|345.678|901.234|567.890";
-   std::deque<double> double_list;
-   strtk::parse(double_string,"|",double_list);
-
-   return 0;
-}
-*/
